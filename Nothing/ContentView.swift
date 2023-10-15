@@ -14,8 +14,16 @@ struct ContentView: View {
 
     @State private var email = ""
     @State private var password = ""
-    
+    @State private var userIsLoggedIn = false
     var body: some View {
+        if userIsLoggedIn {
+            ListView()
+        }else {
+            content
+        }
+    }
+    
+    var content: some View {
         ZStack {
             Color.purple
             
@@ -56,7 +64,7 @@ struct ContentView: View {
                     .foregroundColor(.white)
                 
                 Button {
-                    //Sign up
+                        register()
                 } label: {
                     Text("Sign up")
                         .bold()
@@ -74,7 +82,7 @@ struct ContentView: View {
                 .offset(y: 100)
                 
                 Button{
-                    //Log in
+                    login()
                 } label: {
                     Text("Already hanve an account? Login")
                         .bold()
@@ -85,6 +93,14 @@ struct ContentView: View {
             }
             
                 .frame(width: 350)
+                .onAppear(){
+                    Auth.auth().addStateDidChangeListener { auth, user in
+                        if user != nil {
+                            userIsLoggedIn.toggle()
+                        }
+                        
+                    }
+                }
             
             /* Image(systemName: "globe")
              .imageScale(.large)
@@ -94,10 +110,21 @@ struct ContentView: View {
         }
         .ignoresSafeArea()   
     }
-    func register(){
-        Auth.auth().createUser(withEmail: email, password: password) {
+    
+    func login(){
+        Auth.auth().signIn(withEmail: email, password: password) { result,error in
             if error != nil {
-                print(error.localizedDescription)
+                print(error!.localizedDescription)
+            }
+        }
+        
+        
+    }
+    
+    func register(){
+        Auth.auth().createUser(withEmail: email, password: password) { result,error in
+            if error != nil {
+                print(error!.localizedDescription)
             }
         }
     }

@@ -11,6 +11,7 @@ import Firebase
 @main
 struct NothingApp: App {
     
+    @StateObject var dataManager = DataManager()
     init(){
         FirebaseApp.configure()
         
@@ -18,7 +19,8 @@ struct NothingApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ListView()
+                .environmentObject(dataManager)
         }
     }
 }
